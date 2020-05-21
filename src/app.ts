@@ -3,7 +3,6 @@ import * as express from 'express';
 import * as mixin from 'merge-descriptors';
 import { ContainerLoader, MidwayContainer, MidwayHandlerKey, MidwayRequestContainer } from 'midway-core';
 
-
 import { CONTROLLER_KEY, PRIORITY_KEY, RouterOption, WEB_ROUTER_KEY, WEB_ROUTER_PARAM_KEY, RouterParamValue, } from '@midwayjs/decorator';
 import { listModule, getProviderId, getClassMetadata, getPropertyDataFromClass } from 'injection';
 
@@ -15,7 +14,7 @@ function isTypeScriptEnvironment() {
   return !!require.extensions['.ts'];
 }
 
-const rc = Symbol('Context#RequestContext')
+const rc = Symbol('Context#RequestContext');
 
 export class Application implements ExpressApplication {
   appDir;
@@ -30,12 +29,13 @@ export class Application implements ExpressApplication {
     priority: number,
     router: any,
     prefix: any,
-  }> = []
+  }> = [];
 
   constructor(options: {
     baseDir?: string;
   } = {}) {
     const expressApp = express();
+
     mixin(this, expressApp);
 
     this.appDir = options.baseDir || process.cwd();
@@ -67,12 +67,10 @@ export class Application implements ExpressApplication {
 
     this.loader.registerHook(MidwayHandlerKey.LOGGER, (key: string) => {
       return this.logger[key];
-    })
-
+    });
 
     this.loadExtend();
   }
-
 
   getBaseDir() {
 
@@ -88,7 +86,6 @@ export class Application implements ExpressApplication {
     await this.loader.refresh();
   }
 
-
   loadExtend() {
     (this as any).use((req, res, next) => {
       req[rc] = new MidwayRequestContainer(this.applicationContext, req);
@@ -102,6 +99,7 @@ export class Application implements ExpressApplication {
     // implement @controller
     for (const module of controllerModules) {
       const providerId = getProviderId(module);
+
       if (providerId) {
         if (this.controllerIds.indexOf(providerId) > -1) {
           throw new Error(`controller identifier [${providerId}] is exists!`);
@@ -115,10 +113,9 @@ export class Application implements ExpressApplication {
     if (this.prioritySortRouters.length) {
       this.prioritySortRouters
         .sort((routerA, routerB) => routerB.priority - routerA.priority)
-        .forEach(({ prefix, router }) => (this as any).use(prefix, router))
+        .forEach(({ prefix, router }) => (this as any).use(prefix, router));
     }
   }
-
 
   protected async preRegisterRouter(target: any, controllerId: string): Promise<void> {
     const controllerOption = getClassMetadata(CONTROLLER_KEY, target);
@@ -127,7 +124,8 @@ export class Application implements ExpressApplication {
     if (newRouter) {
       // implement middleware in controller
       const middlewares = controllerOption.routerOptions.middleware;
-      await this.handlerWebMiddleware(middlewares, (middlewareImpl) => {
+
+      await this.handlerWebMiddleware(middlewares,middlewareImpl => {
         newRouter.use(middlewareImpl);
       });
 
@@ -140,7 +138,7 @@ export class Application implements ExpressApplication {
           const middlewares2 = webRouter.middleware;
           const methodMiddlwares: any[] = [];
 
-          await this.handlerWebMiddleware(middlewares2, (middlewareImpl) => {
+          await this.handlerWebMiddleware(middlewares2,middlewareImpl => {
             methodMiddlwares.push(middlewareImpl);
           });
 
@@ -153,7 +151,7 @@ export class Application implements ExpressApplication {
             this.generateController(
               `${controllerId}.${webRouter.method}`,
               routeArgsInfo,
-            )
+            ),
           ];
 
           // apply controller from request context
@@ -163,6 +161,7 @@ export class Application implements ExpressApplication {
 
       // sort for priority
       const priority = getClassMetadata(PRIORITY_KEY, target);
+
       this.prioritySortRouters.push({
         priority: priority || 0,
         prefix: controllerOption.prefix,
@@ -175,8 +174,9 @@ export class Application implements ExpressApplication {
   protected createRouter(controllerOption): express.Application {
     const { routerOptions: { strict, sensitive } } = controllerOption;
     const app = express();
+
     if (strict) {
-      app.enabled('strict routing')
+      app.enabled('strict routing');
     }
     if (sensitive) {
       app.enabled('case sensitive routing');
@@ -196,6 +196,7 @@ export class Application implements ExpressApplication {
           handlerCallback(middleware);
         } else {
           const middlewareImpl: WebMiddleware = await this.applicationContext.getAsync(middleware);
+
           if (middlewareImpl && typeof (middlewareImpl as any).resolve === 'function') {
             handlerCallback((middlewareImpl as any).resolve());
           }
@@ -205,21 +206,25 @@ export class Application implements ExpressApplication {
   }
 
   public generateController(controllerMapping: string, routeArgsInfo?: RouterParamValue[]) {
-    const [controllerId, methodName] = controllerMapping.split('.');
+    const [ controllerId, methodName ] = controllerMapping.split('.');
+
     return async (req, res, next) => {
-      const args = [req, res, next];
+      const args = [ req, res, next ];
+
       if (Array.isArray(routeArgsInfo)) {
         await Promise.all(routeArgsInfo.map(async ({ index, extractValue }) => {
           args[index] = await extractValue(req, res, next);
         }));
       }
       const controller = await req[rc].getAsync(controllerId);
+
       return controller[methodName].apply(controller, args);
     };
   }
 
   private isMiddlewareApplied(name: string): boolean {
     const app = this as any;
+
     return (
       !!app._router &&
       !!app._router.stack &&
@@ -230,17 +235,15 @@ export class Application implements ExpressApplication {
     );
   }
 
-
   get applicationContext(): MidwayContainer {
     return this.loader.getApplicationContext();
   }
 
-  get config(){
+  get config() {
     return this.fileloder ? this.fileloder.config : {};
   }
 
 }
-
 
 // var routes = app._router.stack;
 // routes.forEach(removeMiddlewares);

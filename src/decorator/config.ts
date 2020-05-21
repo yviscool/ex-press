@@ -12,7 +12,7 @@ export function config(identifier?: string) {
       }
       attachClassMetadata(CONFIG_KEY, {
         key: identifier,
-        propertyName: targetKey
+        propertyName: targetKey,
       }, target);
     }
   };

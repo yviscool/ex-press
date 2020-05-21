@@ -14,14 +14,12 @@ const originalPrototypes = {
 
 export class FileLoader {
 
-
     options;
     app;
     appInfo;
     config;
     appPath: string[];
     serverEnv: string;
-
 
     constructor(options) {
         this.options = options;
@@ -30,7 +28,7 @@ export class FileLoader {
         this.appInfo = {
             name: 'ex-press',
             baseDir: this.options.baseDir,
-        }
+        };
 
         this.appPath = this.getAppPath();
         this.serverEnv = this.getServerEnv();
@@ -83,9 +81,11 @@ export class FileLoader {
             for (const property of properties) {
                 let descriptor = Object.getOwnPropertyDescriptor(ext, property);
                 let originalDescriptor = Object.getOwnPropertyDescriptor(proto, property);
+
                 if (!originalDescriptor) {
                     // try to get descriptor from originalPrototypes
                     const originalProto = originalPrototypes[name];
+
                     if (originalProto) {
                         originalDescriptor = Object.getOwnPropertyDescriptor(originalProto, property);
                     }
@@ -109,19 +109,21 @@ export class FileLoader {
     protected loadConfig() {
         const names = [
             'config',
-            `config.${this.serverEnv}`
-        ]
+            `config.${this.serverEnv}`,
+        ];
         const config = {};
-        for (let name of names) {
 
-            let filePaths = this.getExtendFilePaths(name, 'config');
+        for (const name of names) {
+
+            const filePaths = this.getExtendFilePaths(name, 'config');
 
             for (let filepath of filePaths) {
                 filepath = resolveModule(filepath);
                 if (!filepath) {
                     continue;
                 }
-                let tempConfig = requireFile(filepath);
+                const tempConfig = requireFile(filepath);
+
                 if (!tempConfig) {
                     continue;
                 }
@@ -138,23 +140,26 @@ export class FileLoader {
 
     protected loadRouter() {
         const filePath = resolveModule(join(this.options.baseDir, 'app/router'));
+
         requireFile(filePath)(this.app);
     }
 
     protected loadMiddleware() {
         const app = this.app;
-        const target = app['middlewares'] = {};
+        const target = app.middlewares = {};
         const filePaths = this.getExtendFilePaths(null, 'middleware');
 
-        for (let filepath of filePaths) {
+        for (const filepath of filePaths) {
             for (const file of fs.readdirSync(filepath)) {
                 // new.js => new
                 const properName = file.replace(/(\.js|\.ts)/, '');
+
                 target[properName] = requireFile(join(filepath, file));
             }
             for (const name in target) {
                 const options = this.config[name] || {};
                 const mw = app.middlewares[name](options, app);
+
                 if (is.object(mw)) {
                     Object.keys(mw)
                         .filter(parser => !this.app.isMiddlewareApplied(parser))
@@ -170,13 +175,14 @@ export class FileLoader {
     }
 
     getExtendFilePaths(name: string, type = 'extend'): string[] {
-        const allPath = [this.options.baseDir, ...this.appPath];
+        const allPath = [ this.options.baseDir, ...this.appPath ];
+
         if (type === 'extend') {
-            return allPath.map(path => join(path, 'app/extend', name))
+            return allPath.map(path => join(path, 'app/extend', name));
         } else if (type === 'config') {
-            return allPath.map(path => join(path, 'config', name))
+            return allPath.map(path => join(path, 'config', name));
         } else if (type === 'middleware') {
-            return allPath.map(path => join(path, 'app/middleware'))
+            return allPath.map(path => join(path, 'app/middleware'));
         }
     }
 
@@ -184,11 +190,13 @@ export class FileLoader {
         const proto = this.app;
         const appPath = [];
         const realpath = fs.realpathSync(proto[EXPRESS_PATH]);
+
         appPath.unshift(realpath);
         return appPath;
     }
     getServerEnv() {
         let serverEnv = this.options.env;
+
         if (!serverEnv) {
             serverEnv = process.env.EXPRESS_SERVER_ENV;
         }

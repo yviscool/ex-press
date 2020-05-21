@@ -4,5 +4,6 @@ export default () => {
         jsonParser: bodyParser.json(),
         urlencodedParser: bodyParser.urlencoded({ extended: true }),
     };
+
     return parserMiddleware;
-}
+};

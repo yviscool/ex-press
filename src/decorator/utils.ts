@@ -5,6 +5,7 @@ export function attachConstructorDataOnClass(identifier, clz, type, index) {
 
   if (!identifier) {
     const args = getParamNames(clz);
+
     if (clz.length === args.length && index < clz.length) {
       identifier = args[index];
     }
@@ -12,12 +13,13 @@ export function attachConstructorDataOnClass(identifier, clz, type, index) {
 
   // save constructor index on class
   let constructorMetaValue = getClassMetadata(CLASS_KEY_CONSTRUCTOR, clz);
+
   if (!constructorMetaValue) {
     constructorMetaValue = {};
   }
   constructorMetaValue[index] = {
     key: identifier,
-    type
+    type,
   };
   saveClassMetadata(CLASS_KEY_CONSTRUCTOR, constructorMetaValue, clz);
 }

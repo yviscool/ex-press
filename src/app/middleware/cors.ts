@@ -1,4 +1,4 @@
 import * as cors from 'cors';
-export default (options) => {
+export default options => {
     return cors(options);
-}
+};

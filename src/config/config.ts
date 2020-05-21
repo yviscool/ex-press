@@ -1,6 +1,6 @@
-import { PowerPartial } from '../interface'
+import { PowerPartial } from '../interface';
 
-export default (appInfo) => {
+export default appInfo => {
     const config = {} as any;
 
     // override config from framework / plugin
@@ -17,7 +17,7 @@ export default (appInfo) => {
 
     config.cors = {
         enable: false,
-    }
+    };
 
     // the return config will combines to EggAppConfig
     return {
