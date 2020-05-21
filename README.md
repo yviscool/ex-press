@@ -1,4 +1,4 @@
-# midway_test
+# ex-press
 
 {{description}}
 
@@ -6,7 +6,7 @@
 
 <!-- add docs here for user -->
 
-see [midway docs][midway] for more detail.
+see [ex-press docs][express] for more detail.
 
 ### Development
 
@@ -30,4 +30,4 @@ $ npm stop
 - Use `npm run autod` to auto detect dependencies upgrade, see [autod](https://www.npmjs.com/package/autod) for more detail.
 
 
-[midway]: https://midwayjs.org
+[express]: https://expressjs.com
