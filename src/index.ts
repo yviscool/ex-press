@@ -1,4 +1,4 @@
 export * from 'injection';
-export * from '@midwayjs/decorator';
+export * from './decorator';
 export * from './app';
 export * from './interface';

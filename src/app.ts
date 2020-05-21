@@ -3,7 +3,7 @@ import * as express from 'express';
 import * as mixin from 'merge-descriptors';
 import { ContainerLoader, MidwayContainer, MidwayHandlerKey, MidwayRequestContainer } from 'midway-core';
 
-import { CONTROLLER_KEY, PRIORITY_KEY, RouterOption, WEB_ROUTER_KEY, WEB_ROUTER_PARAM_KEY, RouterParamValue, } from '@midwayjs/decorator';
+import { CONTROLLER_KEY, PRIORITY_KEY, WEB_ROUTER_KEY, WEB_ROUTER_PARAM_KEY, RouterParamValue } from '@midwayjs/decorator';
 import { listModule, getProviderId, getClassMetadata, getPropertyDataFromClass } from 'injection';
 
 import { ExpressApplication, WebMiddleware } from './interface';
@@ -56,18 +56,13 @@ export class Application implements ExpressApplication {
 
   initialize() {
     this.loader.initialize();
+    this.fileloder.load();
 
-    this.loader.registerHook(MidwayHandlerKey.CONFIG, (key: string) => {
-      return safelyGet(key, this.config);
-    });
+    this.loader.registerHook(MidwayHandlerKey.CONFIG, (key: string) => safelyGet(key, this.config));
 
-    this.loader.registerHook(MidwayHandlerKey.PLUGIN, (key: string) => {
-      return this.plugin[key];
-    });
+    this.loader.registerHook(MidwayHandlerKey.PLUGIN, (key: string) => this.plugin[key]);
 
-    this.loader.registerHook(MidwayHandlerKey.LOGGER, (key: string) => {
-      return this.logger[key];
-    });
+    this.loader.registerHook(MidwayHandlerKey.LOGGER, (key: string) => this.logger[key]);
 
     this.loadExtend();
   }
@@ -125,12 +120,12 @@ export class Application implements ExpressApplication {
       // implement middleware in controller
       const middlewares = controllerOption.routerOptions.middleware;
 
-      await this.handlerWebMiddleware(middlewares,middlewareImpl => {
+      await this.handlerWebMiddleware(middlewares, middlewareImpl => {
         newRouter.use(middlewareImpl);
       });
 
       // implement @get @post
-      const webRouterInfo: RouterOption[] = getClassMetadata(WEB_ROUTER_KEY, target);
+      const webRouterInfo = getClassMetadata(WEB_ROUTER_KEY, target);
 
       if (webRouterInfo && typeof webRouterInfo[Symbol.iterator] === 'function') {
         for (const webRouter of webRouterInfo) {
@@ -138,7 +133,7 @@ export class Application implements ExpressApplication {
           const middlewares2 = webRouter.middleware;
           const methodMiddlwares: any[] = [];
 
-          await this.handlerWebMiddleware(middlewares2,middlewareImpl => {
+          await this.handlerWebMiddleware(middlewares2, middlewareImpl => {
             methodMiddlwares.push(middlewareImpl);
           });
 
@@ -206,10 +201,10 @@ export class Application implements ExpressApplication {
   }
 
   public generateController(controllerMapping: string, routeArgsInfo?: RouterParamValue[]) {
-    const [ controllerId, methodName ] = controllerMapping.split('.');
+    const [controllerId, methodName] = controllerMapping.split('.');
 
     return async (req, res, next) => {
-      const args = [ req, res, next ];
+      const args = [req, res, next];
 
       if (Array.isArray(routeArgsInfo)) {
         await Promise.all(routeArgsInfo.map(async ({ index, extractValue }) => {
@@ -224,7 +219,6 @@ export class Application implements ExpressApplication {
 
   private isMiddlewareApplied(name: string): boolean {
     const app = this as any;
-
     return (
       !!app._router &&
       !!app._router.stack &&
