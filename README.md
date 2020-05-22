@@ -2,6 +2,17 @@
 
 {{description}}
 
+[![NPM version][npm-image]][npm-url]
+[![build status][travis-image]][travis-url]
+[![coverage][coverage-image]][coverage-url]
+
+[npm-image]: https://img.shields.io/npm/v/ex-press.svg?style=flat-square
+[npm-url]: https://npmjs.org/package/ex-press
+[travis-image]: https://travis-ci.org/yviscool/ex-press.svg?branch=master
+[travis-url]: https://travis-ci.org/yviscool/ex-press
+[coverage-url]: https://coveralls.io/github/yviscool/ex-press
+[coverage-image]: https://coveralls.io/repos/github/yviscool/ex-press/badge.svg
+
 ## QuickStart
 
 <!-- add docs here for user -->
