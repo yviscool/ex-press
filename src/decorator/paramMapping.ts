@@ -1,7 +1,6 @@
 import { attachPropertyDataToClass } from 'injection';
 import { WEB_ROUTER_PARAM_KEY } from './constant';
 
-
 export enum RouteParamTypes {
   REQUEST,
   RESPONSE,
@@ -24,7 +23,7 @@ export interface RouterParamValue {
 }
 
 export const extractValue = function extractValue(key, data) {
-  return async function (req, res, next) {
+  return async (req, res, next) => {
     switch (key) {
       case RouteParamTypes.NEXT:
         return next;
@@ -54,13 +53,13 @@ export const extractValue = function extractValue(key, data) {
   };
 };
 
-const createParamMapping = function (type: RouteParamTypes) {
+const createParamMapping = (type: RouteParamTypes) => {
   return (data?: any) => (target, key, index) => {
     attachPropertyDataToClass(WEB_ROUTER_PARAM_KEY, {
       index,
       type,
       data,
-      extractValue: extractValue(type, data)
+      extractValue: extractValue(type, data),
     }, target, key);
   };
 };

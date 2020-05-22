@@ -32,7 +32,7 @@ const ROUTER_MIDDLEWARE = 'ROUTER_MIDDLEWARE';
 const defaultMetadata = {
   [PATH_METADATA]: '/',
   [METHOD_METADATA]: RequestMethod.GET,
-  [ROUTER_MIDDLEWARE]: []
+  [ROUTER_MIDDLEWARE]: [],
 };
 
 export interface RequestMappingMetadata {
@@ -53,7 +53,7 @@ export const RequestMapping = (
       path,
       requestMethod,
       method: key,
-      middleware
+      middleware,
     } as RouterOption, target);
 
     return descriptor;
@@ -64,7 +64,7 @@ const createMappingDecorator = (method: string) => (
   path?: string,
   routerOptions: {
     middleware?: MiddlewareParamArray;
-  } = { middleware: [] }
+  } = { middleware: [] },
 ): MethodDecorator => {
   return RequestMapping({
     [PATH_METADATA]: path,

@@ -16,7 +16,10 @@ export default appInfo => {
     };
 
     config.cors = {
-        enable: false,
+    };
+
+    config.static = {
+        dir : '/public',
     };
 
     // the return config will combines to EggAppConfig

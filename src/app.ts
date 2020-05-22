@@ -6,7 +6,7 @@ import { ContainerLoader, MidwayContainer, MidwayHandlerKey, MidwayRequestContai
 import { CONTROLLER_KEY, PRIORITY_KEY, WEB_ROUTER_KEY, WEB_ROUTER_PARAM_KEY, RouterParamValue } from '@midwayjs/decorator';
 import { listModule, getProviderId, getClassMetadata, getPropertyDataFromClass } from 'injection';
 
-import { ExpressApplication, WebMiddleware } from './interface';
+import { WebMiddleware, AbstractHttpAdapter } from './interface';
 import { safelyGet } from './utils';
 import { FileLoader } from './loader';
 
@@ -16,11 +16,13 @@ function isTypeScriptEnvironment() {
 
 const rc = Symbol('Context#RequestContext');
 
-export class Application implements ExpressApplication {
+export class Application extends AbstractHttpAdapter {
   appDir;
   baseDir;
   plugin;
   logger;
+  app: any;
+  middlewares: any;
   loader: ContainerLoader;
   fileloder: FileLoader;
 
@@ -34,10 +36,9 @@ export class Application implements ExpressApplication {
   constructor(options: {
     baseDir?: string;
   } = {}) {
-    const expressApp = express();
-
-    mixin(this, expressApp);
-
+    super();
+    this.app = express();
+    mixin(this, this.app);
     this.appDir = options.baseDir || process.cwd();
     this.baseDir = this.getBaseDir();
 
@@ -82,7 +83,7 @@ export class Application implements ExpressApplication {
   }
 
   loadExtend() {
-    (this as any).use((req, res, next) => {
+    this.use((req, res, next) => {
       req[rc] = new MidwayRequestContainer(this.applicationContext, req);
       next();
     });
@@ -108,7 +109,7 @@ export class Application implements ExpressApplication {
     if (this.prioritySortRouters.length) {
       this.prioritySortRouters
         .sort((routerA, routerB) => routerB.priority - routerA.priority)
-        .forEach(({ prefix, router }) => (this as any).use(prefix, router));
+        .forEach(({ prefix, router }) => this.use(prefix, router));
     }
   }
 
@@ -201,10 +202,10 @@ export class Application implements ExpressApplication {
   }
 
   public generateController(controllerMapping: string, routeArgsInfo?: RouterParamValue[]) {
-    const [controllerId, methodName] = controllerMapping.split('.');
+    const [ controllerId, methodName ] = controllerMapping.split('.');
 
     return async (req, res, next) => {
-      const args = [req, res, next];
+      const args = [ req, res, next ];
 
       if (Array.isArray(routeArgsInfo)) {
         await Promise.all(routeArgsInfo.map(async ({ index, extractValue }) => {
@@ -217,8 +218,9 @@ export class Application implements ExpressApplication {
     };
   }
 
-  private isMiddlewareApplied(name: string): boolean {
+  public isMiddlewareApplied(name: string): boolean {
     const app = this as any;
+
     return (
       !!app._router &&
       !!app._router.stack &&

@@ -3,7 +3,7 @@ import { PLUGIN_KEY } from './constant';
 import { attachConstructorDataOnClass } from './utils';
 
 export function plugin(identifier?: string) {
-  return function (target: any, targetKey: string, index?: number): void {
+  return (target: any, targetKey: string, index?: number) => {
     if (typeof index === 'number') {
       attachConstructorDataOnClass(identifier, target, PLUGIN_KEY, index);
     } else {
@@ -12,7 +12,7 @@ export function plugin(identifier?: string) {
       }
       attachClassMetadata(PLUGIN_KEY, {
         key: identifier,
-        propertyName: targetKey
+        propertyName: targetKey,
       }, target);
     }
   };

@@ -3,6 +3,7 @@ import * as fs from 'fs';
 import * as extend from 'extend2';
 import * as is from 'is-type-of';
 import { resolveModule, requireFile } from './utils';
+import { Application } from '../app';
 
 const EXPRESS_PATH = Symbol.for('epxress#appPath');
 
@@ -15,9 +16,10 @@ const originalPrototypes = {
 export class FileLoader {
 
     options;
-    app;
+    app: Application;
     appInfo;
     config;
+    plugins;
     appPath: string[];
     serverEnv: string;
 
@@ -26,7 +28,7 @@ export class FileLoader {
         this.app = options.app;
         this.options = options;
         this.appInfo = {
-            name: 'ex-press',
+            name: 'express',
             baseDir: this.options.baseDir,
         };
 
@@ -35,7 +37,7 @@ export class FileLoader {
     }
 
     load() {
-
+        this.loadPlugin();
         this.loadConfig();
 
         this.loadApplicationExtend();
@@ -138,6 +140,29 @@ export class FileLoader {
 
     }
 
+    protected loadPlugin() {
+
+        const filePaths = this.getExtendFilePaths('plugin', 'plugin');
+
+        const plugins = {};
+
+        for (let filepath of filePaths) {
+            filepath = resolveModule(filepath);
+            if (!filepath) {
+                continue;
+            }
+            const plugin = requireFile(filepath);
+
+            if (!plugin) {
+                continue;
+            }
+            extend(true, plugins, plugin);
+        }
+
+        this.plugins = plugins;
+
+    }
+
     protected loadRouter() {
         const filePath = resolveModule(join(this.options.baseDir, 'app/router'));
 
@@ -163,7 +188,7 @@ export class FileLoader {
                 if (is.object(mw)) {
                     Object.keys(mw)
                         .filter(parser => !this.app.isMiddlewareApplied(parser))
-                        .forEach(parserKey => (this as any).use(mw[parserKey]));
+                        .forEach(parserKey => (this.app.use(mw[parserKey])));
                 } else {
                     if (this.config.cors.enable === false) {
                         continue;
@@ -177,12 +202,13 @@ export class FileLoader {
     getExtendFilePaths(name: string, type = 'extend'): string[] {
         const allPath = [ this.options.baseDir, ...this.appPath ];
 
-        if (type === 'extend') {
-            return allPath.map(path => join(path, 'app/extend', name));
-        } else if (type === 'config') {
-            return allPath.map(path => join(path, 'config', name));
-        } else if (type === 'middleware') {
-            return allPath.map(path => join(path, 'app/middleware'));
+        switch (type) {
+            case 'extend':
+                return allPath.map(path => join(path, 'app/extend', name));
+            case 'middleware':
+                return allPath.map(path => join(path, 'app/middleware'));
+            default:
+                return allPath.map(path => join(path, 'config', name));
         }
     }
 
