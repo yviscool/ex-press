@@ -2,11 +2,11 @@
 import { Controller, Get, Request, Response, Provide } from '../../../../../../src';
 
 @Provide()
-@Controller('/api')
+@Controller('/user')
 export class BaseApi {
 
   @Get('/')
   async index(@Request() req, @Response() res) {
-    res.json("zjl")
+    res.send('<p>hey</p>');
   }
 }

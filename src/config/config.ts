@@ -7,7 +7,7 @@ export default appInfo => {
 
     // add your egg config in here
     config.coreMiddleware = [
-        'bodyParser'
+        'bodyParser',
     ];
 
     config.cors = {

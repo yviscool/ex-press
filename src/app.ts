@@ -14,6 +14,7 @@ function isTypeScriptEnvironment() {
   return !!require.extensions['.ts'];
 }
 
+const EXPRESS_PATH = Symbol.for('epxress#appPath');
 const HELPER = Symbol('Application#Helper');
 const rc = Symbol('Context#RequestContext');
 
@@ -24,7 +25,7 @@ export class Application extends AbstractHttpAdapter {
   logger;
   app: any;
   middlewares: any;
-  middleware: any;
+  middleware = [];
   loader: ContainerLoader;
   fileloder: FileLoader;
 
@@ -51,13 +52,14 @@ export class Application extends AbstractHttpAdapter {
 
     this.fileloder = new FileLoader({
       app: this,
-      baseDir: this.appDir,
+      baseDir: this.baseDir,
     });
 
     this.initialize();
   }
 
   initialize() {
+
     this.loader.initialize();
     this.fileloder.load();
 
@@ -71,7 +73,6 @@ export class Application extends AbstractHttpAdapter {
   }
 
   getBaseDir() {
-
     if (isTypeScriptEnvironment()) {
       return join(this.appDir, 'src');
     } else {
@@ -81,6 +82,7 @@ export class Application extends AbstractHttpAdapter {
 
   async ready() {
     this.loader.loadDirectory();
+    await this.loadController();
     await this.loader.refresh();
   }
 
@@ -93,8 +95,8 @@ export class Application extends AbstractHttpAdapter {
 
   async loadController() {
     const controllerModules = listModule(CONTROLLER_KEY);
-
     // implement @controller
+
     for (const module of controllerModules) {
       const providerId = getProviderId(module);
 
@@ -243,10 +245,20 @@ export class Application extends AbstractHttpAdapter {
   }
 
   get Helper() {
-    if (!this[HELPER]){
+    if (!this[HELPER]) {
       this[HELPER] = {};
     }
     return this[HELPER];
+  }
+
+  get [EXPRESS_PATH]() {
+    return join(__dirname, './');
+  }
+
+  get instance() {
+    return (req, res, next) => {
+      this.handle(req, res, next);
+    };
   }
 
 }

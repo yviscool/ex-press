@@ -1,4 +1,5 @@
 import { extname } from 'path';
+import * as is from 'is-type-of';
 import * as fs from 'fs';
 import * as BuiltinModule from 'module';
 
@@ -22,6 +23,23 @@ export function resolveModule(filepath) {
   }
 
   return fullPath;
+}
+
+export function loadFile(filepath, ...inject) {
+  filepath = filepath && this.resolveModule(filepath);
+  if (!filepath) {
+    return null;
+  }
+
+  // function(arg1, args, ...) {}
+  if (inject.length === 0) inject = [ this.app ];
+
+  let ret = this.requireFile(filepath);
+
+  if (is.function(ret) && !is.class(ret)) {
+    ret = ret(...inject);
+  }
+  return ret;
 }
 
 export function requireFile(filepath) {

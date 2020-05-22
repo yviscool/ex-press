@@ -21,6 +21,10 @@ export abstract class AbstractHttpAdapter {
   application?: Application;
   request?: Request;
   response?: Response;
+  _router?: any[];
+
+  init?();
+  handle?(...args: any[]);
 
   use?(...args: any[]);
 

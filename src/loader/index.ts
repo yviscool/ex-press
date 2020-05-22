@@ -3,16 +3,16 @@ import * as fs from 'fs';
 import * as is from 'is-type-of';
 import * as extend from 'extend2';
 import * as camelcase from 'camelcase';
-import { resolveModule, requireFile } from './utils';
+import { resolveModule, requireFile, loadFile } from './utils';
 import { Application } from '../app';
-
-const EXPRESS_PATH = Symbol.for('epxress#appPath');
 
 const originalPrototypes = {
     request: require('express').request,
     response: require('express').response,
     application: require('express').application,
 };
+
+const EXPRESS_PATH = Symbol.for('epxress#appPath');
 
 export class FileLoader {
 
@@ -38,7 +38,7 @@ export class FileLoader {
     }
 
     load() {
-        this.loadPlugin();
+        // this.loadPlugin();
         this.loadConfig();
 
         this.loadApplicationExtend();
@@ -123,7 +123,8 @@ export class FileLoader {
                 filepath = resolveModule(filepath);
                 if (!filepath) continue;
 
-                const config = requireFile(filepath);
+                const config = loadFile(filepath, this.appInfo);
+
                 if (!config) continue;
 
                 extend(true, target, config);
@@ -148,6 +149,7 @@ export class FileLoader {
             if (!filepath) continue;
 
             const plugin = requireFile(filepath);
+
             if (!plugin) continue;
 
             extend(true, plugins, plugin);
@@ -165,6 +167,7 @@ export class FileLoader {
 
     protected loadMiddleware() {
         const app = this.app;
+
         const target = app.middlewares = {};
         const filePaths = this.getExtendFilePaths(null, 'middleware');
 
@@ -179,23 +182,24 @@ export class FileLoader {
             }
         }
 
-        for (const name of app.middlewares) {
+        for (const name in app.middlewares) {
             Object.defineProperty(app.middleware, name, {
                 get() {
-                    return app.middlewares[name]
+                    return app.middleware[name];
                 },
                 enumerable: false,
-                configurable: false
-            })
+                configurable: false,
+            });
         }
 
-        const middlewareNames = this.config.coreMiddleware.concat(this.config.appMiddleware);
+        const middlewareNames = this.config.coreMiddleware.concat(this.config.appMiddleware || []);
 
         const middlewaresMap = new Map<string, boolean>();
-        for (const name in middlewareNames) {
+
+        for (const name of middlewareNames) {
 
             if (!app.middlewares[name]) {
-                throw new TypeError(`Middleware ${name} not found`); ``
+                throw new TypeError(`Middleware ${name} not found`);
             }
 
             if (middlewaresMap.has(name)) {
@@ -217,7 +221,8 @@ export class FileLoader {
     }
 
     getExtendFilePaths(name: string, type = 'extend'): string[] {
-        const allPath = [this.options.baseDir, ...this.appPath];
+
+        const allPath = [ this.options.baseDir, ...this.appPath ];
 
         switch (type) {
             case 'extend':
@@ -255,10 +260,6 @@ export class FileLoader {
             serverEnv = serverEnv.trim();
         }
         return serverEnv;
-    }
-
-    get [EXPRESS_PATH]() {
-        return join(__dirname, '..');
     }
 
 }
