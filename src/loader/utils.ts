@@ -29,6 +29,7 @@ export function requireFile(filepath) {
     // if not js module, just return content buffer
     const extName = extname(filepath);
 
+    // @ts-ignore
     if (extName && !Module._extensions[extName]) {
       return fs.readFileSync(filepath);
     }

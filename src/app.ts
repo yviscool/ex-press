@@ -209,6 +209,7 @@ export class Application extends AbstractHttpAdapter {
 
       if (Array.isArray(routeArgsInfo)) {
         await Promise.all(routeArgsInfo.map(async ({ index, extractValue }) => {
+          // @ts-ignore
           args[index] = await extractValue(req, res, next);
         }));
       }
