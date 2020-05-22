@@ -2,7 +2,7 @@ import { attachClassMetadata } from 'injection';
 import { CONFIG_KEY } from './constant';
 import { attachConstructorDataOnClass } from './utils';
 
-export function config(identifier?: string) {
+export function Config(identifier?: string) {
   return (target: any, targetKey: string, index?: number) => {
     if (typeof index === 'number') {
       attachConstructorDataOnClass(identifier, target, CONFIG_KEY, index);

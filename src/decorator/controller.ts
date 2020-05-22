@@ -2,7 +2,7 @@ import { saveClassMetadata, saveModule, scope, ScopeEnum } from 'injection';
 import { CONTROLLER_KEY } from './constant';
 import { MiddlewareParamArray } from './interface';
 
-export function controller(prefix: string, routerOptions: {
+export function Controller(prefix: string, routerOptions: {
   sensitive?: boolean,
   strict?: boolean,
   middleware?: MiddlewareParamArray,

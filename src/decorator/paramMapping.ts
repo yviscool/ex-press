@@ -64,11 +64,14 @@ const createParamMapping = (type: RouteParamTypes) => {
   };
 };
 
-export const session = () => createParamMapping(RouteParamTypes.SESSION)();
-export const body = (property?: string) => createParamMapping(RouteParamTypes.BODY)(property);
-export const query = (property?: string) => createParamMapping(RouteParamTypes.QUERY)(property);
-export const param = (property?: string) => createParamMapping(RouteParamTypes.PARAM)(property);
-export const headers = (property?: string) => createParamMapping(RouteParamTypes.HEADERS)(property);
-export const file = (property?: string) => createParamMapping(RouteParamTypes.FILE)(property);
-export const files = () => createParamMapping(RouteParamTypes.FILES)();
+export const Request = () => createParamMapping(RouteParamTypes.REQUEST)();
+export const Response = () => createParamMapping(RouteParamTypes.RESPONSE)();
+export const Res = () => createParamMapping(RouteParamTypes.RESPONSE)();
+export const Session = () => createParamMapping(RouteParamTypes.SESSION)();
+export const Body = (property?: string) => createParamMapping(RouteParamTypes.BODY)(property);
+export const Query = (property?: string) => createParamMapping(RouteParamTypes.QUERY)(property);
+export const Param = (property?: string) => createParamMapping(RouteParamTypes.PARAM)(property);
+export const Headers = (property?: string) => createParamMapping(RouteParamTypes.HEADERS)(property);
+export const File = (property?: string) => createParamMapping(RouteParamTypes.FILE)(property);
+export const Files = () => createParamMapping(RouteParamTypes.FILES)();
 export const Ip = () => createParamMapping(RouteParamTypes.IP)();
