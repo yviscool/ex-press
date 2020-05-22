@@ -21,7 +21,6 @@ export abstract class AbstractHttpAdapter {
   application?: Application;
   request?: Request;
   response?: Response;
-  Helper?: any;
 
   use?(...args: any[]);
 

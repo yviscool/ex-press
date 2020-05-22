@@ -1,13 +1,12 @@
 'use strict';
-import { Controller, Get, Request, Response, provide} from '../../../../../../src';
-import req = require('express/lib/request');
+import { Controller, Get, Request, Response, Provide } from '../../../../../../src';
 
-@provide()
+@Provide()
 @Controller('/api')
 export class BaseApi {
 
   @Get('/')
   async index(@Request() req, @Response() res) {
-      res.json("zjl")
+    res.json("zjl")
   }
 }

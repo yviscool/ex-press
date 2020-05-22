@@ -25,7 +25,6 @@ export const RequestMethod = {
 
 const PATH_METADATA = 'PATH_METADATA';
 const METHOD_METADATA = 'METHOD_METADATA';
-const ROUTER_NAME_METADATA = 'ROUTER_NAME_METADATA';
 const ROUTER_MIDDLEWARE = 'ROUTER_MIDDLEWARE';
 
 const defaultMetadata = {

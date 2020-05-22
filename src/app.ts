@@ -14,6 +14,7 @@ function isTypeScriptEnvironment() {
   return !!require.extensions['.ts'];
 }
 
+const HELPER = Symbol('Application#Helper');
 const rc = Symbol('Context#RequestContext');
 
 export class Application extends AbstractHttpAdapter {
@@ -23,6 +24,7 @@ export class Application extends AbstractHttpAdapter {
   logger;
   app: any;
   middlewares: any;
+  middleware: any;
   loader: ContainerLoader;
   fileloder: FileLoader;
 
@@ -238,6 +240,13 @@ export class Application extends AbstractHttpAdapter {
 
   get config() {
     return this.fileloder ? this.fileloder.config : {};
+  }
+
+  get Helper() {
+    if (!this[HELPER]){
+      this[HELPER] = {};
+    }
+    return this[HELPER];
   }
 
 }

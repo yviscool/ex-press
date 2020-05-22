@@ -1,7 +1,8 @@
 import { join } from 'path';
 import * as fs from 'fs';
-import * as extend from 'extend2';
 import * as is from 'is-type-of';
+import * as extend from 'extend2';
+import * as camelcase from 'camelcase';
 import { resolveModule, requireFile } from './utils';
 import { Application } from '../app';
 
@@ -62,9 +63,7 @@ export class FileLoader {
     }
 
     protected loadHelperExtend() {
-        if (this.app && this.app.Helper) {
-            this.loadExtend('helper', this.app.Helper.prototype);
-        }
+        this.loadExtend('helper', this.app.Helper);
     }
 
     protected loadExtend(name: string, proto) {
@@ -113,30 +112,27 @@ export class FileLoader {
             'config',
             `config.${this.serverEnv}`,
         ];
-        const config = {};
+        const target = {};
 
         for (const name of names) {
 
             const filePaths = this.getExtendFilePaths(name, 'config');
 
             for (let filepath of filePaths) {
+
                 filepath = resolveModule(filepath);
-                if (!filepath) {
-                    continue;
-                }
-                const tempConfig = requireFile(filepath);
+                if (!filepath) continue;
 
-                if (!tempConfig) {
-                    continue;
-                }
+                const config = requireFile(filepath);
+                if (!config) continue;
 
-                extend(true, config, tempConfig);
+                extend(true, target, config);
 
             }
 
         }
 
-        this.config = config;
+        this.config = target;
 
     }
 
@@ -147,15 +143,13 @@ export class FileLoader {
         const plugins = {};
 
         for (let filepath of filePaths) {
-            filepath = resolveModule(filepath);
-            if (!filepath) {
-                continue;
-            }
-            const plugin = requireFile(filepath);
 
-            if (!plugin) {
-                continue;
-            }
+            filepath = resolveModule(filepath);
+            if (!filepath) continue;
+
+            const plugin = requireFile(filepath);
+            if (!plugin) continue;
+
             extend(true, plugins, plugin);
         }
 
@@ -177,30 +171,53 @@ export class FileLoader {
         for (const filepath of filePaths) {
             for (const file of fs.readdirSync(filepath)) {
                 // new.js => new
-                const properName = file.replace(/(\.js|\.ts)/, '');
+                let properName = file.replace(/(\.js|\.ts)/, '');
+
+                properName = camelcase(properName);
 
                 target[properName] = requireFile(join(filepath, file));
             }
-            for (const name in target) {
-                const options = this.config[name] || {};
-                const mw = app.middlewares[name](options, app);
+        }
 
-                if (is.object(mw)) {
-                    Object.keys(mw)
-                        .filter(parser => !this.app.isMiddlewareApplied(parser))
-                        .forEach(parserKey => (this.app.use(mw[parserKey])));
-                } else {
-                    if (this.config.cors.enable === false) {
-                        continue;
-                    }
-                    app.use(mw);
-                }
+        for (const name of app.middlewares) {
+            Object.defineProperty(app.middleware, name, {
+                get() {
+                    return app.middlewares[name]
+                },
+                enumerable: false,
+                configurable: false
+            })
+        }
+
+        const middlewareNames = this.config.coreMiddleware.concat(this.config.appMiddleware);
+
+        const middlewaresMap = new Map<string, boolean>();
+        for (const name in middlewareNames) {
+
+            if (!app.middlewares[name]) {
+                throw new TypeError(`Middleware ${name} not found`); ``
+            }
+
+            if (middlewaresMap.has(name)) {
+                throw new TypeError(`Middleware ${name} redefined`);
+            }
+
+            middlewaresMap.set(name, true);
+
+            const options = this.config[name] || {};
+            const mw = app.middlewares[name](options, app);
+
+            if (is.object(mw)) {
+                Object.keys(mw).filter(parser => !app.isMiddlewareApplied(parser)).forEach(parserKey => app.use(mw[parserKey]));
+            } else {
+                app.use(mw);
             }
         }
+
     }
 
     getExtendFilePaths(name: string, type = 'extend'): string[] {
-        const allPath = [ this.options.baseDir, ...this.appPath ];
+        const allPath = [this.options.baseDir, ...this.appPath];
 
         switch (type) {
             case 'extend':
