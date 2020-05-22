@@ -1,6 +1,5 @@
 'use strict';
-import { provide } from 'injection';
-import { Controller, Get, Request, Response} from '../../../../../../src';
+import { Controller, Get, Request, Response, provide} from '../../../../../../src';
 import req = require('express/lib/request');
 
 @provide()

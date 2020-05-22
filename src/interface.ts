@@ -60,3 +60,6 @@ export abstract class AbstractHttpAdapter {
   abstract ready();
 
 }
+
+
+

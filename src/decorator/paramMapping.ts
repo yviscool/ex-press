@@ -1,5 +1,4 @@
-import { attachPropertyDataToClass } from 'injection';
-import { WEB_ROUTER_PARAM_KEY } from './constant';
+import { WEB_ROUTER_PARAM_KEY, attachPropertyDataToClass } from './common';
 
 export enum RouteParamTypes {
   REQUEST,

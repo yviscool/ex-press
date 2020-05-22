@@ -4,7 +4,7 @@ import * as mixin from 'merge-descriptors';
 import { ContainerLoader, MidwayContainer, MidwayHandlerKey, MidwayRequestContainer } from 'midway-core';
 
 import { CONTROLLER_KEY, PRIORITY_KEY, WEB_ROUTER_KEY, WEB_ROUTER_PARAM_KEY, RouterParamValue } from '@midwayjs/decorator';
-import { listModule, getProviderId, getClassMetadata, getPropertyDataFromClass } from 'injection';
+import { listModule, getProviderId, getClassMetadata, getPropertyDataFromClass } from './decorator';
 
 import { WebMiddleware, AbstractHttpAdapter } from './interface';
 import { safelyGet } from './utils';
