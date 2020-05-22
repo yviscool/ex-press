@@ -13,7 +13,7 @@ describe('/test/app.test.ts', () => {
 
     process.env.EXPRESS_TYPESCRIPT = true as any;
 
-    describe('load ts file', () => {
+    describe('user router map', () => {
         let app: Application;
 
         before(async () => {
@@ -22,11 +22,30 @@ describe('/test/app.test.ts', () => {
         })
 
 
-        it('should load ts directory', (done) => {
+        it('should respond with users', (done) => {
             request(app.instance)
                 .get('/user')
-                .expect('Content-Type', 'text/html; charset=utf-8')
-                .expect(200, '<p>hey</p>', done);
+                .expect([{ "name": 'zjl', "age": 35 }], done);
+        })
+
+        it('should get one user', (done) => {
+            request(app.instance)
+                .get('/user/12')
+                .expect("get user 12", done);
+        })
+
+        it('should insert user', (done) => {
+            request(app.instance)
+                .post('/user')
+                .set('Content-Type', 'application/json')
+                .send('{"user":"tobi"}')
+                .expect(200, '{"user":"tobi"}', done)
+        })
+
+        it('should delete user', (done) => {
+            request(app.instance)
+                .delete('/user/12')
+                .expect("delete user 12", done)
         })
     })
 

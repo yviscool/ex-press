@@ -171,17 +171,11 @@ export class Application extends AbstractHttpAdapter {
 
   }
 
-  protected createRouter(controllerOption): express.Application {
-    const { routerOptions: { strict, sensitive } } = controllerOption;
-    const app = express();
+  protected createRouter(controllerOption): express.Router {
+    const { routerOptions } = controllerOption;
+    const router = express.Router(routerOptions);
 
-    if (strict) {
-      app.enabled('strict routing');
-    }
-    if (sensitive) {
-      app.enabled('case sensitive routing');
-    }
-    return app;
+    return router;
   }
 
   private async handlerWebMiddleware(
