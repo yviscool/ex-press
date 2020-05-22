@@ -1,38 +1,38 @@
 import { ScopeEnum, saveObjectDefProps } from '../common';
-
-const debug = require('debug')('injection:context:obj_def');
+import Debug from 'debug';
+const debug = Debug('injection:context:obj_def');
 
 export function Async() {
-  return function (target: any): void {
+  return (target: any) => {
     debug(`set [async] property in [${target.name}]`);
-    return saveObjectDefProps(target, {isAsync: true});
+    return saveObjectDefProps(target, { isAsync: true });
   };
 }
 
 export function Init() {
-  return function (target: any, propertyKey: string): void {
+  return (target: any, propertyKey: string) => {
     debug(`set [init] property in [${target.constructor.name}]`);
-    return saveObjectDefProps(target.constructor, {initMethod: propertyKey});
+    return saveObjectDefProps(target.constructor, { initMethod: propertyKey });
   };
 }
 
 export function Destroy() {
-  return function (target: any, propertyKey: string): void {
+  return (target: any, propertyKey: string) => {
     debug(`set [destroy] property in [${target.constructor.name}]`);
-    return saveObjectDefProps(target.constructor, {destroyMethod: propertyKey});
+    return saveObjectDefProps(target.constructor, { destroyMethod: propertyKey });
   };
 }
 
 export function Scope(scope: ScopeEnum = ScopeEnum.Singleton) {
-  return function (target: any): void {
+  return (target: any) => {
     debug(`set [scope] property in [${target.name}]`);
-    return saveObjectDefProps(target, {scope});
+    return saveObjectDefProps(target, { scope });
   };
 }
 
 export function Autowire(isAutowire = true) {
-  return function (target: any): void {
+  return (target: any) => {
     debug(`set [autowire] property in [${target.name}]`);
-    return saveObjectDefProps(target, {isAutowire});
+    return saveObjectDefProps(target, { isAutowire });
   };
 }

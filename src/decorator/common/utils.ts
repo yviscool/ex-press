@@ -1,5 +1,5 @@
 import { getParamNames, getClassMetadata, saveClassMetadata } from './decoratorManager';
-import { CLASS_KEY_CONSTRUCTOR, OBJ_DEF_CLS, TAGGED, TAGGED_PROP, TAGGED_CLS, INJECT_TAG} from './constant';
+import { CLASS_KEY_CONSTRUCTOR, OBJ_DEF_CLS, TAGGED, TAGGED_PROP, TAGGED_CLS, INJECT_TAG } from './constant';
 import { TagPropsMetadata, ReflectResult, ObjectIdentifier, ObjectDefinitionOptions } from '../../interface';
 import { DUPLICATED_METADATA, INVALID_DECORATOR_OPERATION, DUPLICATED_INJECTABLE_DECORATOR } from './errMsg';
 import camelcase = require('camelcase');
@@ -10,7 +10,7 @@ function _tagParameterOrProperty(
   annotationTarget: any,
   propertyName: string,
   metadata: TagPropsMetadata,
-  parameterIndex?: number
+  parameterIndex?: number,
 ) {
 
   let paramsOrPropertiesMetadata: ReflectResult = {};
@@ -50,6 +50,7 @@ export function attachConstructorDataOnClass(identifier, clz, type, index) {
 
   if (!identifier) {
     const args = getParamNames(clz);
+
     if (clz.length === args.length && index < clz.length) {
       identifier = args[index];
     }
@@ -57,12 +58,13 @@ export function attachConstructorDataOnClass(identifier, clz, type, index) {
 
   // save constructor index on class
   let constructorMetaValue = getClassMetadata(CLASS_KEY_CONSTRUCTOR, clz);
+
   if (!constructorMetaValue) {
     constructorMetaValue = {};
   }
   constructorMetaValue[index] = {
     key: identifier,
-    type
+    type,
   };
   saveClassMetadata(CLASS_KEY_CONSTRUCTOR, constructorMetaValue, clz);
 }
@@ -87,18 +89,22 @@ interface InjectOptions {
  */
 export function saveConstructorInject(opts: InjectOptions) {
   let identifier = opts.identifier;
+
   if (!identifier) {
     const args = getParamNames(opts.target);
+
     if (opts.target.length === args.length && opts.index < opts.target.length) {
       identifier = args[opts.index];
     }
   } else if (identifier.includes('@') && !identifier.includes(':')) {
     const args = getParamNames(opts.target);
+
     if (opts.target.length === args.length && opts.index < opts.target.length) {
       identifier = `${identifier}:${args[opts.index]}`;
     }
   }
   const metadata = new Metadata(INJECT_TAG, identifier);
+
   metadata.args = opts.args;
   _tagParameterOrProperty(TAGGED, opts.target, opts.targetKey, metadata, opts.index);
 }
@@ -112,6 +118,7 @@ export function getConstructorInject(target: any): TagPropsMetadata[] {
  */
 export function savePropertyInject(opts: InjectOptions) {
   let identifier = opts.identifier;
+
   if (!identifier) {
     identifier = opts.targetKey;
   }
@@ -119,6 +126,7 @@ export function savePropertyInject(opts: InjectOptions) {
     identifier = `${identifier}:${opts.targetKey}`;
   }
   const metadata = new Metadata(INJECT_TAG, identifier);
+
   metadata.args = opts.args;
   _tagParameterOrProperty(TAGGED_PROP, opts.target.constructor, opts.targetKey, metadata);
 }

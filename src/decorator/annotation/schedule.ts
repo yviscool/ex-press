@@ -18,12 +18,12 @@ export interface ScheduleOpts {
     endDate?: string | number | Date
     iterator?: boolean
     utc?: boolean
-    tz?: string
+    tz?: string,
   };
 }
 
 export function Schedule(scheduleOpts: ScheduleOpts | string) {
-  return function (target: any): void {
+  return (target: any) => {
     saveModule(SCHEDULE_KEY, target);
     saveClassMetadata(SCHEDULE_KEY, scheduleOpts, target);
     Scope(ScopeEnum.Request)(target);

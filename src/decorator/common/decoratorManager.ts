@@ -1,4 +1,4 @@
-  
+
 import 'reflect-metadata';
 import { ObjectDefinitionOptions, TagClsMetadata } from '../interface';
 import { OBJ_DEF_CLS, TAGGED_CLS } from './constant';
@@ -88,9 +88,11 @@ export class DecoratorManager extends Map {
   saveMetadata(decoratorNameKey: decoratorKey, data, target, propertyName?) {
     if (propertyName) {
       const originMap = DecoratorManager.getOriginMetadata(this.injectMethodKeyPrefix, target, propertyName);
+
       originMap.set(DecoratorManager.getDecoratorMethodKey(decoratorNameKey), data);
     } else {
       const originMap = DecoratorManager.getOriginMetadata(this.injectClassKeyPrefix, target);
+
       originMap.set(DecoratorManager.getDecoratorClassKey(decoratorNameKey), data);
     }
   }
@@ -105,6 +107,7 @@ export class DecoratorManager extends Map {
   attachMetadata(decoratorNameKey: decoratorKey, data, target, propertyName?) {
     let originMap;
     let key;
+
     if (propertyName) {
       originMap = DecoratorManager.getOriginMetadata(this.injectMethodKeyPrefix, target, propertyName);
       key = DecoratorManager.getDecoratorMethodKey(decoratorNameKey);
@@ -127,9 +130,11 @@ export class DecoratorManager extends Map {
   getMetadata(decoratorNameKey: decoratorKey, target, propertyName?) {
     if (propertyName) {
       const originMap = DecoratorManager.getOriginMetadata(this.injectMethodKeyPrefix, target, propertyName);
+
       return originMap.get(DecoratorManager.getDecoratorMethodKey(decoratorNameKey));
     } else {
       const originMap = DecoratorManager.getOriginMetadata(this.injectClassKeyPrefix, target);
+
       return originMap.get(DecoratorManager.getDecoratorClassKey(decoratorNameKey));
     }
   }
@@ -143,6 +148,7 @@ export class DecoratorManager extends Map {
    */
   savePropertyDataToClass(decoratorNameKey: decoratorKey, data, target, propertyName) {
     const originMap = DecoratorManager.getOriginMetadata(this.injectClassMethodKeyPrefix, target);
+
     originMap.set(DecoratorManager.getDecoratorClsMethodKey(decoratorNameKey, propertyName), data);
   }
 
@@ -156,6 +162,7 @@ export class DecoratorManager extends Map {
   attachPropertyDataToClass(decoratorNameKey: decoratorKey, data, target, propertyName) {
     const originMap = DecoratorManager.getOriginMetadata(this.injectClassMethodKeyPrefix, target);
     const key = DecoratorManager.getDecoratorClsMethodKey(decoratorNameKey, propertyName);
+
     if (!originMap.has(key)) {
       originMap.set(key, []);
     }
@@ -170,6 +177,7 @@ export class DecoratorManager extends Map {
    */
   getPropertyDataFromClass(decoratorNameKey: decoratorKey, target, propertyName) {
     const originMap = DecoratorManager.getOriginMetadata(this.injectClassMethodKeyPrefix, target);
+
     return originMap.get(DecoratorManager.getDecoratorClsMethodKey(decoratorNameKey, propertyName));
   }
 
@@ -181,6 +189,7 @@ export class DecoratorManager extends Map {
   listPropertyDataFromClass(decoratorNameKey: decoratorKey, target) {
     const originMap = DecoratorManager.getOriginMetadata(this.injectClassMethodKeyPrefix, target);
     const res = [];
+
     for (const [ key, value ] of originMap) {
       if (key.indexOf(DecoratorManager.getDecoratorClsMethodPrefix(decoratorNameKey)) !== -1) {
         res.push(value);
@@ -427,6 +436,7 @@ export function clearAllModule() {
 export function getParamNames(func): string[] {
   const fnStr = func.toString().replace(STRIP_COMMENTS, '');
   let result = fnStr.slice(fnStr.indexOf('(') + 1, fnStr.indexOf(')')).match(ARGUMENT_NAMES);
+
   if (result === null) {
     result = [];
   }
@@ -439,6 +449,7 @@ export function getParamNames(func): string[] {
  */
 export function getProviderId(module): string {
   const metaData = Reflect.getMetadata(TAGGED_CLS, module) as TagClsMetadata;
+
   if (metaData) {
     return metaData.id;
   }

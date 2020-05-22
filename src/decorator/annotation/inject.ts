@@ -2,7 +2,7 @@ import { saveConstructorInject, savePropertyInject } from '../common';
 import { ObjectIdentifier } from '../interface';
 
 export function Inject(identifier?: ObjectIdentifier) {
-  return function (target: any, targetKey: string, index?: number): void {
+  return (target: any, targetKey: string, index?: number) => {
 
     if (typeof index === 'number') {
       saveConstructorInject({ target, targetKey, identifier, index });

@@ -1,4 +1,4 @@
-  
+
 export enum ScopeEnum {
   Singleton = 'Singleton',
   Request = 'Request',
