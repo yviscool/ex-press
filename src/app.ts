@@ -195,10 +195,10 @@ export class Application extends AbstractHttpAdapter {
   }
 
   public generateController(controllerMapping: string, routeArgsInfo?: RouterParamValue[]) {
-    const [controllerId, methodName] = controllerMapping.split('.');
+    const [ controllerId, methodName ] = controllerMapping.split('.');
 
     return async (req, res, next) => {
-      const args = [req, res, next];
+      const args = [ req, res, next ];
 
       if (Array.isArray(routeArgsInfo)) {
         await Promise.all(routeArgsInfo.map(async ({ index, extractValue }) => {

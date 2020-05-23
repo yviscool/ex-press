@@ -58,6 +58,19 @@ describe('/test/app.test.ts', () => {
                     "email": "xxx.xxx@xxx.com",
                 }, done)
         })
+
+        it('should get config.foo property', (done) => {
+            request(app.instance)
+                .get('/user/foo/config')
+                .expect("zjl", done)
+        })
+
+
+        it('should get config.foo property1', (done) => {
+            request(app.instance)
+                .get('/user/config/foo')
+                .expect("zjl", done)
+        })
     })
 
 

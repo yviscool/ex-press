@@ -1,17 +1,25 @@
 'use strict';
-import { Controller, Get, Post, Request, Body, Param, Del, Response as Res, Provide, Inject, } from '../../../../../../src';
+import { Controller, Get, Post, Request, Body, Param, Del, Response, Provide, Inject, Config, } from '../../../../../../src';
 import { UserService } from '../service/user';
-import { Response } from 'express';
+import { Response as Ctx } from 'express';
 
 @Provide()
 @Controller('/user')
 export class UserController {
 
-  @Inject('userService')
-  userService: UserService
 
   @Inject()
-  ctx: Response
+  ctx: Ctx;
+
+  @Config('foo')
+  fooConfig: string;
+
+  @Config()
+  foo: string;
+
+  @Inject('userService')
+  userService: UserService;
+
 
   @Get('/')
   async index(@Request() req) {
@@ -19,7 +27,7 @@ export class UserController {
   }
 
   @Post('/')
-  async post(@Body() body, @Res() res) {
+  async post(@Body() body, @Response() res) {
     res.json(body);
   }
 
@@ -39,5 +47,14 @@ export class UserController {
     this.ctx.json(user);
   }
 
+  @Get('/foo/config')
+  async getFooConfig() {
+    this.ctx.send(this.fooConfig)
+  }
+
+  @Get('/config/foo')
+  async getConfig() {
+    this.ctx.send(this.foo)
+  }
 
 }
