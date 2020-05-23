@@ -82,6 +82,18 @@ describe('/test/app.test.ts', () => {
         })
 
     })
+    
+    describe('load static middlware', () => {
+
+        it('should respond test.html', (done) => {
+            request(app.instance)
+            .get('/public/test.html')
+            .expect('Content-Type', 'text/html; charset=UTF-8')
+            .expect(200, '<h1>zjl</h1>', done);
+        })
+
+    })
+
 
     describe('middleware router map', () => {
 
