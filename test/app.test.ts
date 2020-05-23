@@ -13,14 +13,14 @@ describe('/test/app.test.ts', () => {
 
     process.env.EXPRESS_TYPESCRIPT = true as any;
 
+    let app: Application;
+
+    before(async () => {
+        app = new Application({ baseDir: path.join(__dirname, './fixtures', 'base-app') });
+        await app.ready();
+    })
+
     describe('user router map', () => {
-        let app: Application;
-
-        before(async () => {
-            app = new Application({ baseDir: path.join(__dirname, './fixtures', 'base-app') });
-            await app.ready();
-        })
-
 
         it('should respond with users', (done) => {
             request(app.instance)
@@ -73,5 +73,14 @@ describe('/test/app.test.ts', () => {
         })
     })
 
+    describe('load router.ts file', () => {
+
+        it('should respond with zjl', (done) => {
+            request(app.instance)
+                .get('/router/test')
+                .expect("zjl", done)
+        })
+
+    })
 
 })

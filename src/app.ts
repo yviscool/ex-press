@@ -61,9 +61,9 @@ export class Application extends AbstractHttpAdapter {
     // load config middleware extend..
     this.fileloder.load();
 
-    this.loader.registerHook(MidwayHandlerKey.CONFIG, (key: string) => safelyGet(key, this.config));
-    this.loader.registerHook(MidwayHandlerKey.PLUGIN, (key: string) => this.plugin[key]);
-    this.loader.registerHook(MidwayHandlerKey.LOGGER, (key: string) => this.logger[key]);
+    this.loader.registerHook(MidwayHandlerKey.CONFIG, key => safelyGet(key, this.config));
+    this.loader.registerHook(MidwayHandlerKey.PLUGIN, key => this.plugin[key]);
+    this.loader.registerHook(MidwayHandlerKey.LOGGER, key => this.logger[key]);
 
   }
 

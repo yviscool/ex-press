@@ -1,7 +1,5 @@
 # ex-press
 
-{{description}}
-
 [![NPM version][npm-image]][npm-url]
 [![build status][travis-image]][travis-url]
 [![coverage][coverage-image]][coverage-url]
@@ -13,6 +11,8 @@
 [coverage-url]: https://coveralls.io/github/yviscool/ex-press
 [coverage-image]: https://coveralls.io/repos/github/yviscool/ex-press/badge.svg
 
+ex-press is Node.js Web framework written by typescript, which uses IoC injection mechanism.
+
 ## QuickStart
 
 <!-- add docs here for user -->
@@ -22,7 +22,7 @@ see [ex-press docs][express] for more detail.
 ```ts
 import { Controller, Get, Post, Request, Body, Param, Del, Response, Provide, Inject, } from 'ex-press';
 import { UserService } from './service/user';
-import { Response as ResponseType } from 'express';
+import { Response as Ctx } from 'express';
 
 @Provide()
 @Controller('/user')
@@ -30,14 +30,17 @@ export class UserController {
 
 
   @Inject()
-  ctx: ResponseType
+  ctx: Ctx
+
+  @Config('hello')
+  hello:string;
 
   @Inject('userService')
   userService: UserService
 
   @Get('/')
   async index(@Request() req) {
-    this.ctx.json([{ name: "zjl", age: 35 }]);
+    this.ctx.json(req.ip);
   }
 
   @Post('/')
