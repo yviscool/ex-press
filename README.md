@@ -19,6 +19,47 @@
 
 see [ex-press docs][express] for more detail.
 
+```ts
+import { Controller, Get, Post, Request, Body, Param, Del, Response, Provide, Inject, } from 'ex-press';
+import { UserService } from './service/user';
+import { Response as ResponseType } from 'express';
+
+@Provide()
+@Controller('/user')
+export class UserController {
+
+
+  @Inject()
+  ctx: ResponseType
+
+  @Inject('userService')
+  userService: UserService
+
+  @Get('/')
+  async index(@Request() req) {
+    this.ctx.json([{ name: "zjl", age: 35 }]);
+  }
+
+  @Post('/')
+  async post(@Body() body, @Res() res) {
+    res.json(body);
+  }
+
+  @Get('/:id')
+  async getParam(@Param('id') id) {
+    this.ctx.send(`get user ${id}`);
+  }
+
+  @Get('/service')
+  async service(@Param() param) {
+    const user = await this.userService.getUser();
+    this.ctx.json(user);
+  }
+
+
+}
+```
+
 ### Development
 
 ```bash
@@ -27,18 +68,6 @@ $ npm run dev
 $ open http://localhost:7001/
 ```
 
-### Deploy
-
-```bash
-$ npm start
-$ npm stop
-```
-
-### npm scripts
-
-- Use `npm run lint` to check code style.
-- Use `npm test` to run unit test.
-- Use `npm run autod` to auto detect dependencies upgrade, see [autod](https://www.npmjs.com/package/autod) for more detail.
 
 
 [express]: https://expressjs.com
