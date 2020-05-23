@@ -2,9 +2,7 @@ import { join } from 'path';
 import * as express from 'express';
 import * as mixin from 'merge-descriptors';
 import { ContainerLoader, MidwayContainer, MidwayHandlerKey, MidwayRequestContainer } from 'midway-core';
-
-import { CONTROLLER_KEY, PRIORITY_KEY, WEB_ROUTER_KEY, WEB_ROUTER_PARAM_KEY, RouterParamValue } from '@midwayjs/decorator';
-import { listModule, getProviderId, getClassMetadata, getPropertyDataFromClass } from './decorator';
+import { listModule, getProviderId, getClassMetadata, getPropertyDataFromClass, CONTROLLER_KEY, PRIORITY_KEY, WEB_ROUTER_KEY, WEB_ROUTER_PARAM_KEY, RouterParamValue } from './decorator';
 
 import { WebMiddleware, AbstractHttpAdapter } from './interface';
 import { safelyGet } from './utils';
@@ -16,7 +14,6 @@ function isTypeScriptEnvironment() {
 
 const EXPRESS_PATH = Symbol.for('epxress#appPath');
 const HELPER = Symbol('Application#Helper');
-const rc = Symbol('Context#RequestContext');
 
 export class Application extends AbstractHttpAdapter {
   appDir;
@@ -30,11 +27,7 @@ export class Application extends AbstractHttpAdapter {
   fileloder: FileLoader;
 
   private controllerIds: string[] = [];
-  private prioritySortRouters: Array<{
-    priority: number,
-    router: any,
-    prefix: any,
-  }> = [];
+  private prioritySortRouters: Array<{ priority: number, router: any, prefix: string, }> = [];
 
   constructor(options: {
     baseDir?: string;
@@ -55,21 +48,23 @@ export class Application extends AbstractHttpAdapter {
       baseDir: this.baseDir,
     });
 
+    //  register app again
+    this.request = Object.create(this.request, { app: { configurable: true, enumerable: true, writable: true, value: this } });
+    this.response = Object.create(this.response, { app: { configurable: true, enumerable: true, writable: true, value: this } });
+
     this.initialize();
   }
 
   initialize() {
 
     this.loader.initialize();
+    // load config middleware extend..
     this.fileloder.load();
 
     this.loader.registerHook(MidwayHandlerKey.CONFIG, (key: string) => safelyGet(key, this.config));
-
     this.loader.registerHook(MidwayHandlerKey.PLUGIN, (key: string) => this.plugin[key]);
-
     this.loader.registerHook(MidwayHandlerKey.LOGGER, (key: string) => this.logger[key]);
 
-    this.loadExtend();
   }
 
   getBaseDir() {
@@ -86,12 +81,12 @@ export class Application extends AbstractHttpAdapter {
     await this.loader.refresh();
   }
 
-  loadExtend() {
-    this.use((req, res, next) => {
-      req[rc] = new MidwayRequestContainer(this.applicationContext, req);
-      next();
-    });
-  }
+  // loadExtend() {
+  //   this.use((req, res, next) => {
+  //     req[rc] = new MidwayRequestContainer(this.applicationContext, req);
+  //     next();
+  //   });
+  // }
 
   async loadController() {
     const controllerModules = listModule(CONTROLLER_KEY);
@@ -174,6 +169,7 @@ export class Application extends AbstractHttpAdapter {
   protected createRouter(controllerOption): express.Router {
     const { routerOptions } = controllerOption;
     const router = express.Router(routerOptions);
+
     return router;
   }
 
@@ -199,10 +195,10 @@ export class Application extends AbstractHttpAdapter {
   }
 
   public generateController(controllerMapping: string, routeArgsInfo?: RouterParamValue[]) {
-    const [ controllerId, methodName ] = controllerMapping.split('.');
+    const [controllerId, methodName] = controllerMapping.split('.');
 
     return async (req, res, next) => {
-      const args = [ req, res, next ];
+      const args = [req, res, next];
 
       if (Array.isArray(routeArgsInfo)) {
         await Promise.all(routeArgsInfo.map(async ({ index, extractValue }) => {
@@ -210,7 +206,8 @@ export class Application extends AbstractHttpAdapter {
           args[index] = await extractValue(req, res, next);
         }));
       }
-      const controller = await req[rc].getAsync(controllerId);
+
+      const controller = await res.requestContext.getAsync(controllerId);
 
       return controller[methodName].apply(controller, args);
     };

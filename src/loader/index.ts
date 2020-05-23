@@ -103,6 +103,7 @@ export class FileLoader {
                     }
                 }
                 Object.defineProperty(proto, property, descriptor);
+
             }
         }
     }
