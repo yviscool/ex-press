@@ -1,8 +1,8 @@
 /// <reference types="mocha" />
-import * as assert from 'power-assert'
+// import * as assert from 'power-assert'
 import * as request from 'supertest';
 import * as path from 'path';
-import * as http from 'http';
+// import * as http from 'http';
 
 import { Application, clearAllModule } from '../src';
 
@@ -46,6 +46,17 @@ describe('/test/app.test.ts', () => {
             request(app.instance)
                 .delete('/user/12')
                 .expect("delete user 12", done)
+        })
+
+        it('should get one user by service', (done) => {
+            request(app.instance)
+                .get('/user/12/service')
+                .expect({
+                    "id": "12",
+                    "username": "mockedName",
+                    "phone": "12345678901",
+                    "email": "xxx.xxx@xxx.com",
+                }, done)
         })
     })
 

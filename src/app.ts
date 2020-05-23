@@ -174,7 +174,6 @@ export class Application extends AbstractHttpAdapter {
   protected createRouter(controllerOption): express.Router {
     const { routerOptions } = controllerOption;
     const router = express.Router(routerOptions);
-
     return router;
   }
 

@@ -1,9 +1,13 @@
 'use strict';
-import { Controller, Get, Post, Request, Body, Param, Del, Response, Provide, } from '../../../../../../src';
+import { Controller, Get, Post, Request, Body, Param, Del, Response, Provide, Inject, } from '../../../../../../src';
+import { UserService } from '../service/user';
 
 @Provide()
 @Controller('/user')
-export class BaseApi {
+export class UserController{
+
+  @Inject('userService')
+  userService: UserService
 
   @Get('/')
   async index(@Request() req, @Response() res) {
@@ -24,5 +28,12 @@ export class BaseApi {
   async getParam(@Param('id') id, @Response() res) {
     res.send(`get user ${id}`);
   }
+
+  @Get('/:id/service')
+  async service(@Param() param, @Response() res) {
+    const user = await this.userService.getUser(param);
+    res.json(user);
+  }
+
 
 }
