@@ -19,7 +19,7 @@ ex-press is Node.js Web framework written by typescript, which uses IoC injectio
 
 see [ex-press docs][express] for more detail.
 
-```ts
+```js
 import { Controller, Get, Post, Request, Body, Param, Del, Response, Provide, Inject, } from 'ex-press';
 import { UserService } from './service/user';
 import { Response as Ctx } from 'express';
@@ -28,9 +28,8 @@ import { Response as Ctx } from 'express';
 @Controller('/user')
 export class UserController {
 
-
   @Inject()
-  ctx: Ctx
+  ctx: Ctx;
 
   @Config('hello')
   hello:string;
@@ -63,13 +62,57 @@ export class UserController {
 }
 ```
 
-### Development
+### Web middleware in router 
 
-```bash
-$ npm i
-$ npm run dev
-$ open http://localhost:7001/
+Now you can provide a middleware in you application (any directory)，such as src/app/middleware/api.ts.
+
+```js
+import { Controller, Get, Post, Request, Body, Param, Del, Response, Provide, Inject, Config, WebMiddleware } from 'ex-press';
+
+@Provide()
+export class ApiMiddleware implements WebMiddleware {
+
+    @Config('foo')
+    foo;
+
+    resolve(): any {
+        return (req, res, next) => {
+            req.api = this.foo;
+            next();
+        };
+    }
+
+}
 ```
+use 
+
+```js
+import { Controller, Get, Provide, Inject } from 'ex-press';
+import { Response as Ctx } from 'express';
+
+@Provide()
+@Controller('/middleware', { middleware: ['apiMiddleware'] })
+export class MiddlewareController {
+
+
+    @Inject()
+    ctx: Ctx;
+
+
+    @Get('/')
+    async index(@Request() req) {
+        this.ctx.send(req.api);
+    }
+
+    @Get('/part', { middleware: ['homeMiddleware'] })
+    async post(@Request() req) {
+        this.ctx.send(req.api + req.home);
+    }
+
+}
+
+```
+
 
 
 

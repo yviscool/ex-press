@@ -83,4 +83,21 @@ describe('/test/app.test.ts', () => {
 
     })
 
+    describe('middleware router map', () => {
+
+        it('should get controller level middleware', (done) => {
+            request(app.instance)
+                .get('/middleware')
+                .expect("zjl", done)
+        })
+
+        it('should get route level middlware', (done) => {
+            request(app.instance)
+                .get('/middleware/part')
+                .expect("zjlixl", done)
+        })
+
+    })
+
+
 })
