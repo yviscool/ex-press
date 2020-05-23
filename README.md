@@ -67,7 +67,7 @@ export class UserController {
 Now you can provide a middleware in you application (any directory)，such as src/app/middleware/api.ts.
 
 ```js
-import { Controller, Get, Post, Request, Body, Param, Del, Response, Provide, Inject, Config, WebMiddleware } from 'ex-press';
+import { Provide,  Config, WebMiddleware } from 'ex-press';
 
 @Provide()
 export class ApiMiddleware implements WebMiddleware {

@@ -1,7 +1,7 @@
 import { join } from 'path';
 import * as express from 'express';
 import * as mixin from 'merge-descriptors';
-import { ContainerLoader, MidwayContainer, MidwayHandlerKey, MidwayRequestContainer } from 'midway-core';
+import { ContainerLoader, MidwayContainer, MidwayHandlerKey } from 'midway-core';
 import { listModule, getProviderId, getClassMetadata, getPropertyDataFromClass, CONTROLLER_KEY, PRIORITY_KEY, WEB_ROUTER_KEY, WEB_ROUTER_PARAM_KEY, RouterParamValue } from './decorator';
 
 import { WebMiddleware, AbstractHttpAdapter } from './interface';
@@ -116,53 +116,51 @@ export class Application extends AbstractHttpAdapter {
     const controllerOption = getClassMetadata(CONTROLLER_KEY, target);
     const newRouter = this.createRouter(controllerOption);
 
-    if (newRouter) {
-      // implement middleware in controller
-      const middlewares = controllerOption.routerOptions.middleware;
+    // implement middleware in controller
+    const middlewares = controllerOption.routerOptions.middleware;
 
-      await this.handlerWebMiddleware(middlewares, middlewareImpl => {
-        newRouter.use(middlewareImpl);
-      });
+    await this.handlerWebMiddleware(middlewares, middlewareImpl => {
+      newRouter.use(middlewareImpl);
+    });
 
-      // implement @get @post
-      const webRouterInfo = getClassMetadata(WEB_ROUTER_KEY, target);
+    // implement @Get @Post
+    const webRouterInfo = getClassMetadata(WEB_ROUTER_KEY, target);
 
-      if (webRouterInfo && typeof webRouterInfo[Symbol.iterator] === 'function') {
-        for (const webRouter of webRouterInfo) {
-          // get middleware
-          const middlewares2 = webRouter.middleware;
-          const methodMiddlwares: any[] = [];
+    if (webRouterInfo && typeof webRouterInfo[Symbol.iterator] === 'function') {
+      for (const webRouter of webRouterInfo) {
+        // get middleware
+        const middlewares2 = webRouter.middleware;
+        const methodMiddlwares: any[] = [];
 
-          await this.handlerWebMiddleware(middlewares2, middlewareImpl => {
-            methodMiddlwares.push(middlewareImpl);
-          });
+        await this.handlerWebMiddleware(middlewares2, middlewareImpl => {
+          methodMiddlwares.push(middlewareImpl);
+        });
 
-          // implement @body @query @param @body
-          const routeArgsInfo = getPropertyDataFromClass(WEB_ROUTER_PARAM_KEY, target, webRouter.method) || [];
+        // implement @Body @Query @Param
+        const routeArgsInfo = getPropertyDataFromClass(WEB_ROUTER_PARAM_KEY, target, webRouter.method) || [];
 
-          const routerArgs = [
-            webRouter.path,
-            ...methodMiddlwares,
-            this.generateController(
-              `${controllerId}.${webRouter.method}`,
-              routeArgsInfo,
-            ),
-          ];
+        const routerArgs = [
+          webRouter.path,
+          ...methodMiddlwares,
+          this.generateController(
+            `${controllerId}.${webRouter.method}`,
+            routeArgsInfo,
+          ),
+        ];
 
-          // apply controller from request context
-          newRouter[webRouter.requestMethod].apply(newRouter, routerArgs);
-        }
+        // apply controller from request context
+        newRouter[webRouter.requestMethod].apply(newRouter, routerArgs);
       }
-
-      // sort for priority
-      const priority = getClassMetadata(PRIORITY_KEY, target);
-
-      this.prioritySortRouters.push({
-        priority: priority || 0,
-        prefix: controllerOption.prefix,
-        router: newRouter,
-      });
     }
+
+    // sort for priority
+    const priority = getClassMetadata(PRIORITY_KEY, target);
+
+    this.prioritySortRouters.push({
+      priority: priority || 0,
+      prefix: controllerOption.prefix,
+      router: newRouter,
+    });
 
   }
 

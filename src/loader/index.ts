@@ -193,6 +193,7 @@ export class FileLoader {
             });
         }
 
+        // todo where is this.config.appMiddlewar
         const middlewareNames = this.config.coreMiddleware.concat(this.config.appMiddleware || []);
 
         const middlewaresMap = new Map<string, boolean>();

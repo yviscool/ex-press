@@ -1,3 +1,4 @@
+import * as path from 'path';
 export default appInfo => {
     const config = {} as any;
 
@@ -8,13 +9,16 @@ export default appInfo => {
     // add your egg config in here
     config.coreMiddleware = [
         'bodyParser',
+        'cors',
+        'static',
     ];
 
     config.cors = {
     };
 
     config.static = {
-        dir: '/public',
+        prefix: '/public',
+        dir: path.join(appInfo.baseDir, 'app/public'),
     };
 
     // the return config will combines to EggAppConfig
