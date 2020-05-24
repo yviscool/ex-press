@@ -8,14 +8,14 @@ export default (options, app) => {
 
     if (!is.array(dirs)) dirs = [ dirs ];
 
-    const staticApp = express();
+    const staticRouter = express.Router(options);
 
     for (const dir of dirs) {
         if (is.string(dir)) {
             mkdirp.sync(options.dir);
-            staticApp.use(options.prefix, express.static(dir, options));
+            staticRouter.use(options.prefix, express.static(dir, options));
         }
     }
 
-    return staticApp;
+    return staticRouter;
 };

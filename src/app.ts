@@ -8,26 +8,22 @@ import { WebMiddleware, AbstractHttpAdapter } from './interface';
 import { safelyGet } from './utils';
 import { FileLoader } from './loader';
 
-function isTypeScriptEnvironment() {
-  return !!require.extensions['.ts'];
-}
-
 const EXPRESS_PATH = Symbol.for('epxress#appPath');
 const HELPER = Symbol('Application#Helper');
 
 export class Application extends AbstractHttpAdapter {
-  appDir;
-  baseDir;
-  plugin;
-  logger;
-  app: any;
-  middlewares: any;
-  middleware = [];
-  loader: ContainerLoader;
-  fileloder: FileLoader;
+  public appDir: string;
+  public baseDir: string;
+  private plugin;
+  public logger;
+  public app: any;
+  public middlewares: any;
+  public middleware = [];
+  private loader: ContainerLoader;
+  private fileloder: FileLoader;
 
   private controllerIds: string[] = [];
-  private prioritySortRouters: Array<{ priority: number, router: any, prefix: string, }> = [];
+  private prioritySortRouters: Array<{ priority: number, router: any, prefix: string }> = [];
 
   constructor(options: {
     baseDir?: string;
@@ -40,7 +36,7 @@ export class Application extends AbstractHttpAdapter {
 
     this.loader = new ContainerLoader({
       baseDir: this.baseDir,
-      isTsMode: true,
+      isTsMode: this.isTsMode,
     });
 
     this.fileloder = new FileLoader({
@@ -68,7 +64,7 @@ export class Application extends AbstractHttpAdapter {
   }
 
   getBaseDir() {
-    if (isTypeScriptEnvironment()) {
+    if (this.isTsMode) {
       return join(this.appDir, 'src');
     } else {
       return join(this.appDir, 'dist');
@@ -249,7 +245,14 @@ export class Application extends AbstractHttpAdapter {
     };
   }
 
+  get isTsMode(): boolean {
+    return !!require.extensions['.ts'];
+  }
+
 }
+    // function isTypeScriptEnvironment() {
+    //   return !!require.extensions['.ts'];
+    // }
 
 // var routes = app._router.stack;
 // routes.forEach(removeMiddlewares);
