@@ -2,6 +2,7 @@
 // import * as assert from 'power-assert'
 import * as request from 'supertest';
 import * as path from 'path';
+import * as session from 'express-session';
 // import * as http from 'http';
 
 import { Application, clearAllModule } from '../src';
@@ -82,14 +83,14 @@ describe('/test/app.test.ts', () => {
         })
 
     })
-    
+
     describe('load static middlware', () => {
 
         it('should respond test.html', (done) => {
             request(app.instance)
-            .get('/public/test.html')
-            .expect('Content-Type', 'text/html; charset=UTF-8')
-            .expect(200, '<h1>zjl</h1>', done);
+                .get('/public/test.html')
+                .expect('Content-Type', 'text/html; charset=UTF-8')
+                .expect(200, '<h1>zjl</h1>', done);
         })
 
     })
@@ -111,5 +112,20 @@ describe('/test/app.test.ts', () => {
 
     })
 
+
+    describe('middleware session map', () => {
+
+
+        it('should respond session.count 1', (done) => {
+
+            request(app.instance)
+                .get('/session')
+                .expect(200, '1', function (err, res) {
+                    if (err) return done(err);
+                    done()
+                })
+        })
+
+    })
 
 })
