@@ -11,9 +11,21 @@ export default appInfo => {
         'bodyParser',
         'cors',
         'static',
+        'session',
     ];
 
     config.cors = {
+
+    };
+
+    config.session = {
+        secret: 'EXPRESS_SESS',
+        resave: false,
+        saveUninitialized: true,
+        cookie: {
+            maxAge: 24 * 3600 * 1000, // ms
+            httpOnly: true,
+        },
     };
 
     config.static = {
