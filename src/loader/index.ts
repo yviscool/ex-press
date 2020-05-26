@@ -51,7 +51,7 @@ export class FileLoader {
     }
 
     protected loadApplicationExtend() {
-        this.loadExtend('application', this.app.application);
+        this.loadExtend('application', this.app);
     }
 
     protected loadRequestExtend() {
