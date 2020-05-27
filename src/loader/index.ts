@@ -1,8 +1,8 @@
 import { join } from 'path';
-import * as fs from 'fs';
-import * as is from 'is-type-of';
-import * as extend from 'extend2';
-import * as camelcase from 'camelcase';
+import fs = require('fs');
+import is = require('is-type-of');
+import extend = require('extend2');
+import camelcase = require('camelcase');
 import { resolveModule, requireFile, loadFile } from './utils';
 import { Application } from '../app';
 

@@ -1,7 +1,7 @@
 import { extname } from 'path';
-import * as is from 'is-type-of';
-import * as fs from 'fs';
-import * as BuiltinModule from 'module';
+import is = require('is-type-of');
+import fs = require('fs');
+import BuiltinModule = require('module');
 
 // Guard against poorly mocked module constructors.
 const Module = module.constructor.length > 1

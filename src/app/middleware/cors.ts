@@ -1,2 +1,2 @@
-import * as cors from 'cors';
+import cors = require('cors');
 export default cors;

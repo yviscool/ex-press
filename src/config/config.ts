@@ -1,4 +1,4 @@
-import * as path from 'path';
+import path = require('path');
 export default appInfo => {
     const config = {} as any;
 

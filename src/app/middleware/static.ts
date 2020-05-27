@@ -1,6 +1,6 @@
-import * as express from 'express';
-import * as mkdirp from 'mkdirp';
-import * as is from 'is-type-of';
+import express = require('express');
+import mkdirp = require('mkdirp');
+import is = require('is-type-of');
 
 export default (options, app) => {
 

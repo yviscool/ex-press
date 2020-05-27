@@ -1,6 +1,7 @@
+import express = require('express');
+import mixin = require('merge-descriptors');
+
 import { join } from 'path';
-import * as express from 'express';
-import * as mixin from 'merge-descriptors';
 import { ContainerLoader, MidwayContainer, MidwayHandlerKey } from 'midway-core';
 import { listModule, getProviderId, getClassMetadata, getPropertyDataFromClass, CONTROLLER_KEY, PRIORITY_KEY, WEB_ROUTER_KEY, WEB_ROUTER_PARAM_KEY, RouterParamValue } from './decorator';
 

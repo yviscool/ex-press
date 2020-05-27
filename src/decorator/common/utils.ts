@@ -2,8 +2,8 @@ import { getParamNames, getClassMetadata, saveClassMetadata } from './decoratorM
 import { CLASS_KEY_CONSTRUCTOR, OBJ_DEF_CLS, TAGGED, TAGGED_PROP, TAGGED_CLS, INJECT_TAG } from './constant';
 import { TagPropsMetadata, ReflectResult, ObjectIdentifier, ObjectDefinitionOptions } from '../interface';
 import { DUPLICATED_METADATA, INVALID_DECORATOR_OPERATION, DUPLICATED_INJECTABLE_DECORATOR } from './errMsg';
-import * as camelcase from 'camelcase';
 import { Metadata } from './metadata';
+import camelcase = require('camelcase');
 
 function _tagParameterOrProperty(
   metadataKey: string,
