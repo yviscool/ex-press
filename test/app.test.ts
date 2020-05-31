@@ -128,4 +128,15 @@ describe('/test/app.test.ts', () => {
 
     })
 
+    describe('return controler map', () => {
+
+
+        it('return value can work', (done) => {
+
+            request(app.instance)
+                .get('/return')
+                .expect("zjl", done);
+        })
+
+    })
 })

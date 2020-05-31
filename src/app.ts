@@ -1,4 +1,5 @@
 import express = require('express');
+import is = require('is-type-of');
 import mixin = require('merge-descriptors');
 
 import { join } from 'path';
@@ -204,7 +205,14 @@ export class Application extends AbstractHttpAdapter {
 
       const controller = await res.requestContext.getAsync(controllerId);
 
-      return controller[methodName].apply(controller, args);
+      const result = await controller[methodName].apply(controller, args);
+
+      const body = await this.transformToResult(result);
+
+      if (is.nullOrUndefined(body)) {
+        return res.send();
+      }
+      return is.object(body) ? res.json(body) : res.end(String(body));
     };
   }
 
@@ -219,6 +227,13 @@ export class Application extends AbstractHttpAdapter {
         (layer: any) => layer && layer.handle && layer.handle.name === name,
       )
     );
+  }
+
+  public async transformToResult(resultOrDeffered: any) {
+    if (resultOrDeffered && is.function(resultOrDeffered.subscribe)) {
+      return resultOrDeffered.toPromise();
+    }
+    return resultOrDeffered;
   }
 
   get applicationContext(): MidwayContainer {

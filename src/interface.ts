@@ -23,6 +23,9 @@ export abstract class AbstractHttpAdapter {
   response?: Response;
   _router?: any[];
 
+  // extend
+  sessionStore?: any;
+
   init?();
   handle?(...args: any[]);
 
