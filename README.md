@@ -20,7 +20,7 @@ ex-press is Node.js Web framework written by typescript, which uses IoC injectio
 see [ex-press docs][express] for more detail.
 
 ```js
-import { Controller, Get, Post, Request, Body, Param, Del, Response, Provide, Inject, } from 'ex-press';
+import { Controller, Get, Post, Request, Body, Param, Del, Response, Provide, Inject } from 'ex-press';
 import { UserService } from './service/user';
 import { Response as Ctx } from 'express';
 
@@ -49,13 +49,13 @@ export class UserController {
 
   @Get('/:id')
   async getParam(@Param('id') id) {
-    this.ctx.send(`get user ${id}`);
+    return `get user ${id}`;
   }
 
   @Get('/service')
   async service(@Param() param) {
     const user = await this.userService.getUser();
-    this.ctx.json(user);
+    return user;
   }
 
 
