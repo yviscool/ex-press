@@ -11,6 +11,10 @@ export const HANDLER_KEY = 'faas:handler';
 export const CONTROLLER_KEY = 'web:controller';
 export const WEB_ROUTER_KEY = 'web:router';
 export const WEB_ROUTER_PARAM_KEY = 'web:router_param';
+export const RENDER_KEY = 'web:render';
+export const HTTP_CODE_KEY = 'web:http_code';
+export const HEADER_KEY = 'web:header';
+export const REDIRECT_KEY = 'web:redirect';
 
 // RPC
 export const HSF_KEY = 'rpc:hsf';
